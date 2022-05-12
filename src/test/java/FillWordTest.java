@@ -1,9 +1,17 @@
+import com.beloved.core.ImageEntity;
+import com.beloved.core.WordCore;
+import com.beloved.utils.BarCodeUtil;
+import com.beloved.utils.QRCodeUtil;
+import com.beloved.utils.WordUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import word.WordCoreUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,25 +26,37 @@ import java.util.Map;
 public class FillWordTest {
 
     private static final HashMap<String, Object> params = new HashMap<>();
+
+    private static final String templatePath = "D:\\project\\TemplateFill\\src\\main\\resources\\template\\TestTemplate.docx";
+
+    private static final String targetPath = "D:\\download\\"+System.currentTimeMillis()+".docx";
+    
+    private static final String targetPdfPath = "D:\\download\\"+System.currentTimeMillis()+".pdf";
+    
+    private static final String templateName = "TestTemplate.docx";
     
     @BeforeClass
     public static void beforeClass() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        params.put("bar_code", 1234567856);
+        params.put("bar_code", new ImageEntity(BarCodeUtil.getBarCodeByteArray("1234567"), 150, 50));
         params.put("username", "张三");
         params.put("age", 20);
         params.put("sex", "男");
         params.put("birthday", "2020-04-04");
-        params.put("image_photo", "image_photo");
-        params.put("qr_code", "qr_code");
+        params.put("image_photo", new ImageEntity("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2Feb%2Fe1%2F06%2Febe106206c0ae1904ab3f45615e556dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654848122&t=116a20f9ac0c437797cee44c07ae13a9", 100, 100));
+        params.put("qr_code", new ImageEntity(QRCodeUtil.getQRCodeByteArray("https://www.bilibili.com/"), 100, 100));
+        params.put("header", "页头");
+        params.put("foot", "页脚");
 
 
         ArrayList<Map<String, Object>> table = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 20; i++) {
             HashMap<String, Object> map = new HashMap<>();
             map.put("username", "张三");
             map.put("age", 20 + i);
             map.put("sex", "男");
+            map.put("image_photo", new ImageEntity("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2Feb%2Fe1%2F06%2Febe106206c0ae1904ab3f45615e556dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654848122&t=116a20f9ac0c437797cee44c07ae13a9", 100, 100));
+            map.put("qr_code", new ImageEntity(QRCodeUtil.getQRCodeByteArray("https://www.bilibili.com/"), 100, 100));
             table.add(map);
         }
         
@@ -48,19 +68,63 @@ public class FillWordTest {
     
     @Test
     public void test01() throws Exception {
-        File templateFile = new File("D:\\project\\TemplateFill\\src\\test\\resources\\template\\测试模板.docx");
+        String templatePath = "D:\\project\\TemplateFill\\src\\test\\resources\\template\\TestTemplate.docx";
         
         String targetPath = "D:\\download\\"+System.currentTimeMillis()+".docx";
-
-        InputStream inputStream = new FileInputStream(templateFile);
         
-        XWPFDocument document = new XWPFDocument(inputStream);
 
-        WordCoreUtils.fillWord(document, params);
+        XWPFDocument document = WordCore.fillWord("D:\\project\\TemplateFill\\src\\test\\resources\\template\\TestTemplate.docx", params);
 
         FileOutputStream os = new FileOutputStream(targetPath);
         document.write(os);
         
+    }
+
+    @Test
+    public void test02() throws Exception {
+        File templateFile = new File("D:\\project\\TemplateFill\\src\\test\\resources\\template\\TestTemplate.docx");
+
+        String targetPath = "D:\\download\\"+System.currentTimeMillis()+".docx";
+        
+        InputStream inputStream = new FileInputStream(templateFile);
+
+        XWPFDocument document = new XWPFDocument(inputStream);
+
+        WordCore.fillWord(document, params);
+        
+        FileOutputStream os = new FileOutputStream(targetPath);
+        document.write(os);
+
+    }
+    
+    @Test
+    public void test03() {
+        String str = "{{abc}}";
+
+        System.out.println(str.indexOf("{{"));
+
+            System.out.println(StringUtils.substringBetween(str, "{{", "}}"));
+    }
+    
+    @Test
+    public void test04() throws Exception {
+        WordUtil.templateFill(templatePath, targetPath, params);
+    }
+
+    @Test
+    public void test05() throws Exception {
+        byte[] bytes = WordUtil.templateFill(templateName, params);
+        
+        FileOutputStream os = new FileOutputStream(targetPath);
+        os.write(bytes);
+    }
+
+    @Test
+    public void test06() throws Exception {
+        byte[] bytes = WordUtil.templateFillToPdfByteArray(templateName, params);
+
+        FileOutputStream os = new FileOutputStream(targetPdfPath);
+        os.write(bytes);
     }
     
 }
