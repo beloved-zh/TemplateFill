@@ -42,8 +42,8 @@ public class FillWordTest {
         params.put("username", "张三");
         params.put("age", 20);
         params.put("sex", "男");
-        params.put("birthday", "2020-04-04");
-        params.put("image_photo", new ImageEntity("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2Feb%2Fe1%2F06%2Febe106206c0ae1904ab3f45615e556dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654848122&t=116a20f9ac0c437797cee44c07ae13a9", 100, 100));
+        params.put("birthday", "2020-04-04");          //https://img0.baidu.com/it/u=4168010673,707269819
+        params.put("image_photo", new ImageEntity("https://joeschmoe.io/api/v1/random", 100, 100));
         params.put("qr_code", new ImageEntity(QRCodeUtil.getQRCodeByteArray("https://www.bilibili.com/"), 100, 100));
         params.put("header", "页头");
         params.put("foot", "页脚");
@@ -55,7 +55,7 @@ public class FillWordTest {
             map.put("username", "张三");
             map.put("age", 20 + i);
             map.put("sex", "男");
-            map.put("image_photo", new ImageEntity("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic_source%2Feb%2Fe1%2F06%2Febe106206c0ae1904ab3f45615e556dc.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654848122&t=116a20f9ac0c437797cee44c07ae13a9", 100, 100));
+            map.put("image_photo", new ImageEntity("https://joeschmoe.io/api/v1/random", 100, 100));
             map.put("qr_code", new ImageEntity(QRCodeUtil.getQRCodeByteArray("https://www.bilibili.com/"), 100, 100));
             table.add(map);
         }
@@ -103,7 +103,7 @@ public class FillWordTest {
 
         System.out.println(str.indexOf("{{"));
 
-            System.out.println(StringUtils.substringBetween(str, "{{", "}}"));
+        System.out.println(StringUtils.substringBetween(str, "{{", "}}"));
     }
     
     @Test
